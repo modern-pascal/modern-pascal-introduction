@@ -1,19 +1,14 @@
 {$ifdef FPC} {$mode objfpc}{$H+}{$J-} {$endif}
 {$ifdef MSWINDOWS} {$apptype CONSOLE} {$endif}
 
-{$ifndef FPC}
-  {$message warn 'Delphi does not have FGL unit'}
-  begin end.
-{$endif}
-
 uses
-  SysUtils, FGL;
+  SysUtils, Generics.Collections;
 
 type
   TMyClass = class
     I, Square: Integer;
   end;
-  TMyClassList = {$ifdef FPC}specialize{$endif} TFPGObjectList<TMyClass>;
+  TMyClassList = {$ifdef FPC}specialize{$endif} TObjectList<TMyClass>;
 
 var
   List: TMyClassList;
