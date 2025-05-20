@@ -65,8 +65,8 @@ begin
   MyInterface := TMyClass2.Create(nil);
   MyClass := TMyClass2.Create(nil);
 
-  // This doesn't compile, since at compile-time it's unknown if My is IMyInterface2.
-  // UseInterface2(My);
+  // This doesn't compile, since at compile-time it's unknown if MyInterface is IMyInterface2.
+  // UseInterface2(MyInterface);
   // UseInterface2(MyClass);
 
   // This compiles and works OK.
@@ -80,12 +80,12 @@ begin
   UseInterface2(MyClass as IMyInterface2);
 
   // This compiles, but will fail at runtime, with ugly "Access violation".
-  // UseInterface3(IMyInterface3(My));
+  // UseInterface3(IMyInterface3(MyInterface));
   // This does not compile. Casting InterfaceType(ClassType) is checked at compile-time.
   // UseInterface3(IMyInterface3(MyClass));
 
   // This compiles, but will fail at runtime, with nice "EInvalidCast: Invalid type cast".
-  // UseInterface3(My as IMyInterface3);
+  // UseInterface3(MyInterface as IMyInterface3);
   // This compiles, but will fail at runtime, with nice "EInvalidCast: Invalid type cast".
   // UseInterface3(MyClass as IMyInterface3);
 
