@@ -30,7 +30,7 @@ begin
 end;
 
 var
-  Apple: TApple; // Note: you could as well declare "Apple: TFruit" here
+  Apple: TApple; // Note: you could also declare "Apple: TFruit" here
 begin
   Apple := TApple.Create;
   try
