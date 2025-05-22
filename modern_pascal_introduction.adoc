@@ -658,7 +658,7 @@ end.
 
 Note that this trick cannot be done as easily with global procedures, functions and variables. With procedures and functions, you could expose a constant pointer to a procedure in another unit (see <<Callbacks>>), but that looks quite dirty.
 
-The usual solution is then to create a trivial "wrapper" functions that underneath simply call the functions from the internal unit, passing the parameters and return values around.
+The usual solution is then to create a trivial "wrapper" function that underneath simply calls the functions from the internal unit, passing the parameters and return values around.
 
 To make this work with global variables, one can use global (unit-level) properties, see <<Properties>>.
 
@@ -697,7 +697,7 @@ We have inheritance and virtual methods.
 include::code-samples/inheritance.dpr[]
 ----
 
-By default methods are not virtual, declare them with `virtual` to make them. Overrides must be marked with `override`, otherwise you will get a warning. To hide a method without overriding (usually you don't want to do this, unless you now what you're doing) use `reintroduce`.
+By default methods are not virtual, declare them with `virtual` to make them so. Overrides must be marked with `override`, otherwise you will get a warning. To hide a method without overriding (usually you don't want to do this, unless you know what you're doing) use `reintroduce`.
 
 To test the class of an instance at runtime, use the `is` operator. To typecast the instance to a specific class, use the `as` operator.
 
@@ -719,7 +719,7 @@ if A is TMyClass then
 
 ### Properties
 
-Properties are a very nice _"syntax sugar"_ to
+Properties are a very nice _"syntactic sugar"_ to
 
 1. Make something that looks like a field (can be read and set) but underneath is realized by calling a _getter_ and _setter_ methods. The typical usage is to perform some side-effect (e.g. redraw the screen) each time some value changes.
 2. Make something that looks like a field, but is read-only. In effect, it's like a constant or a parameter-less function.
@@ -814,7 +814,7 @@ At each property, you can declare some additional things that will be helpful fo
 
 ### Exceptions - Quick Example
 
-We have exceptions. They can be caught with `try ... except ... end` clauses, and we have finally sections like `try ... finally ... end`.
+We have exceptions. They can be caught with `try ... except ... end` clauses, and we have `finally` sections like `try ... finally ... end`.
 
 [source,pascal]
 ----
@@ -885,7 +885,7 @@ The `inherited` call is often used to call the ancestor method of the same name.
 include::code-samples/method_calls_inherited.dpr[]
 ----
 
-Since using `inherited` to call a method with the same name, with the same arguments, is a very often case, there is a special shortcut for it: you can just write `inherited;` (`inherited` keyword followed immediately by a semicolon, instead of a method name). This means "_call an inherited method with the same name, passing it the same arguments as the current method_".
+Since using `inherited` to call a method with the same name, with the same arguments, is a very common case, there is a special shortcut for it: you can just write `inherited;` (`inherited` keyword followed immediately by a semicolon, instead of a method name). This means "_call an inherited method with the same name, passing it the same arguments as the current method_".
 
 TIP: In the above example, all the `inherited ...;` calls could be replaced by a simple `inherited;`.
 
@@ -904,7 +904,7 @@ begin
 end;
 ----
 
-Note 2: You usually want to make the `MyMethod` _virtual_ when many classes (along the "_inheritance chain_") define it. More about the virtual methods in the section below. But the `inherited` keyword works regardless if the method is virtual or not. The `inherited` always means that the compiler starts searching for the method in an ancestor, and it makes sense for both _virtual_ and _not virtual_ methods.
+Note 2: You usually want to make the `MyMethod` _virtual_ when many classes (along the "_inheritance chain_") define it. More about the virtual methods in the section below. But the `inherited` keyword works regardless of whether the method is virtual or not. The `inherited` always means that the compiler starts searching for the method in an ancestor, and it makes sense for both _virtual_ and _non-virtual_ methods.
 
 [[virtual-methods-section]]
 ### Virtual methods, override and reintroduce
@@ -1209,7 +1209,7 @@ There are various solutions to it:
 
 * The most future-proof solution is to use `TComponent` class "free notification" mechanism. One component can be notified when another component is freed, and thus set its reference to `nil`.
 +
-Thus you get something like a _weak reference_. It can cope with various usage scenarios, for example you can let the code from outside of the class to set your reference, and the outside code can also free the instance at anytime.
+Thus you get something like a _weak reference_. It can cope with various usage scenarios, for example you can allow the code from outside of the class to set your reference, and the outside code can also free the instance at any time.
 +
 This requires both classes to descend from `TComponent`. Using it in general boils down to calling `FreeNotification` , `RemoveFreeNotification`, and overriding `Notification`.
 +
@@ -1500,9 +1500,9 @@ end;
 
 Note that, although the exception is an instance of an object, you should never manually free it after raising. The compiler will generate proper code that makes sure to free the exception object once it's handled.
 
-### Finally (doing things regardless if an exception occurred)
+### Finally (doing things regardless of whether an exception occurred)
 
-Often you use `try .. finally .. end` construction to free an instance of some object, regardless if an exception occurred when using this object. The way to write it looks like this:
+Often you use `try .. finally .. end` construction to free an instance of some object, regardless of whether an exception occurred when using this object. The way to write it looks like this:
 
 [source,pascal]
 ----
@@ -1520,7 +1520,7 @@ begin
 end;
 ----
 
-This works reliably always, and does not cause memory leaks, even if `MyInstance.DoSomething` or `MyInstance.DoSomethingElse` raise an exception.
+This always works, and does not cause memory leaks, even if `MyInstance.DoSomething` or `MyInstance.DoSomethingElse` raise an exception.
 
 Note that this takes into account that local variables, like `MyInstance` above, have undefined values (may contain random "memory garbage") before the first assignment. That is, writing something like this would _not_ be valid:
 
@@ -1626,7 +1626,7 @@ So `B` will execute if
 - Or you will call `Exit` or (if you're in the loop) `Break` or `Continue` right after calling `A`.
 - Or none of the above happened, and the code in `A` just executed without any exception, and you didn't call `Exit`, `Break` or `Continue` either.
 
-The only way to really avoid the `B` being executed is to unconditionally interrupt the application process using `Halt` or some platform-specific APIs (like https://www.man7.org/linux/man-pages/man3/exit.3.html[libc exit on Unix]) inside `A`. Which generally shall not be done -- it's more flexible to use exceptions to interrupt the application, because it allows some other code to have a chance to clean up.
+The only way to really avoid the `B` being executed is to unconditionally interrupt the application process using `Halt` or some platform-specific APIs (like https://www.man7.org/linux/man-pages/man3/exit.3.html[libc exit on Unix]) inside `A`. Which generally should not be done -- it's more flexible to use exceptions to interrupt the application, because it allows some other code to have a chance to clean up.
 
 NOTE: The `try .. finally .. end` doesn't catch the exception. The exception will still propagate upward, and can be caught by the `try .. except .. end` block outside of this one.
 
@@ -1641,7 +1641,7 @@ begin
     Exit;
     WriteLn('This will not happen');
   finally
-    WriteLn('This will happen regardless if we have left the block through Exception, Exit, Continue, Break, etc.');
+    WriteLn('This will happen regardless of whether we have left the block through Exception, Exit, Continue, Break, etc.');
   end;
   WriteLn('This will not happen');
 end;
@@ -1736,14 +1736,14 @@ TDictionary:: A generic dictionary.
 TObjectDictionary:: A generic dictionary, that can "own" the keys and/or values.
 // So (which means that they should be object instances, and will be automatically freed).
 
-Here's how to you use a simple generic `TObjectList`:
+Here's how to use a simple generic `TObjectList`:
 
 [source,pascal]
 ----
 include::code-samples/generics_lists.dpr[]
 ----
 
-Note that some operations require comparing two items, like sorting and searching (e.g. by `Sort` and `IndexOf` methods). The `Generics.Collections` containers use for this a _comparer_. The _default comparer_ is reasonable for all types, even for records (in which case it compares memory contents, which is a reasonable default at least for searching using `IndexOf`).
+Note that some operations require comparing two items, like sorting and searching (e.g. by `Sort` and `IndexOf` methods). The `Generics.Collections` containers use a _comparer_ for this. The _default comparer_ is reasonable for all types, even for records (in which case it compares memory contents, which is a reasonable default at least for searching using `IndexOf`).
 // It can be customized if needed.
 
 When sorting the list you can provide a _custom comparer_ as a parameter. The _comparer_ is a class implementing the `IComparer` interface. In practice, you usually define the appropriate callback, and use `TComparer<T>.Construct` method to wrap this callback into an `IComparer` instance. An example of doing this is below:
@@ -1755,7 +1755,7 @@ include::code-samples/generics_sorting.dpr[]
 
 The `TDictionary` class implements a *dictionary*, also known as a *map (key -> value)*, also known as an *associative array*. Its API is a bit similar to the C# `TDictionary` class. It has useful iterators for keys, values, and pairs of key->value.
 
-An example code using a dictionary:
+An example using a dictionary:
 
 [source,pascal]
 ----
@@ -2000,7 +2000,7 @@ To get FPC 3.3.1, we recommend to use FpcUpDeluxe: https://castle-engine.io/fpcu
 
 A powerful feature of any modern language. The definition of something (typically, of a class) can be parameterized with another type. The most typical example is when you need to create a container (a list, dictionary, tree, graph...): you can define _a list of type T_, and then _specialize_ it to instantly get _a list of integers_, _a list of strings_, _a list of TMyRecord_, and so on.
 
-The generics in Pascal work much like generics in C++. Which means that they are _"expanded"_ at the specialization time, a _little_ like macros (but much safer than macros; for example, the identifiers are resolved at the time of generic definition, not at specialization, so you cannot "inject" any unexpected behavior when specializing the generic). In effect this means that they are very fast (can be optimized for each particular type) and work with types of any size. You can use a primitive type (integer, float) as well as a record, as well as a class when specializing a generic.
+The generics in Pascal work much like generics in C++. Which means that they are _"expanded"_ at specialization time, a _little_ like macros (but much safer than macros; for example, the identifiers are resolved at the time of generic definition, not at specialization, so you cannot "inject" any unexpected behavior when specializing the generic). In effect this means that they are very fast (can be optimized for each particular type) and work with types of any size. You can use a primitive type (integer, float) as well as a record, as well as a class when specializing a generic.
 
 // Unlike in Java, you are *not* limited to only generics of things that are a reference.
 
@@ -2107,7 +2107,7 @@ include::code-samples/myconfig.inc[]
 +
 Now you can include this file using `{$I myconfig.inc}` in all your sources.
 
-* The other common use is to split a large unit into many files, while still keeping it a single unit as far as the language rules are concerned. Do not overuse this technique -- your first instinct should be to split a single unit into multiple units, not to split a single unit into multiple include files. Never the less, this is a useful technique.
+* The other common use is to split a large unit into many files, while still keeping it a single unit as far as the language rules are concerned. Do not overuse this technique -- your first instinct should be to split a single unit into multiple units, not to split a single unit into multiple include files. Nevertheless, this is a useful technique.
   . It allows to avoid "exploding" the number of units, while still keeping your source code files short. For example, it may be better to have a single unit with _"commonly used UI controls"_ than to create _one unit for each UI control class_, as the latter approach would make the typical "uses" clause long (since a typical UI code will depend on a couple of UI classes). But placing all these UI classes in a single `myunit.pas` file would make it a long file, unhandy to navigate, so splitting it into multiple include files may make sense.
 //For example, *Castle Game Engine* has a unit `CastleControls` with a couple of user-interface controls, like `TCastleButton`, `TCastleLabel`, `TCastleImageControl` and more. We could split it into many units, even to _one unit per class_, as the classes are not really tightly connected. But that would often force you to have a long `uses` clause, since a lot of user-interface code will want to use a couple of control classes. So we made a practical decision to just put all _often used controls_ in a single unit.
   . It allows to have a cross-platform unit interface with platform-dependent implementation easily. Basically you can do
@@ -2118,11 +2118,11 @@ Now you can include this file using `{$I myconfig.inc}` in all your sources.
 {$ifdef MSWINDOWS} {$I my_windows_implementation.inc} {$endif}
 ----
 +
-Sometimes this is better than writing a long code with many `{$ifdef UNIX}`, `{$ifdef MSWINDOWS}` intermixed with normal code (variable declarations, routine implementation). The code is more readable this way. You can even use this technique more aggressively, by using the `-Fi` command-line option of FPC to include some subdirectories only for specific platforms. Then you can have many version of include file `{$I my platform_specific_implementation.inc}` and you simply include them, letting the compiler find the correct version.
+Sometimes this is better than writing a long code with many `{$ifdef UNIX}`, `{$ifdef MSWINDOWS}` intermixed with normal code (variable declarations, routine implementation). The code is more readable this way. You can even use this technique more aggressively, by using the `-Fi` command-line option of FPC to include some subdirectories only for specific platforms. Then you can have many version of include file `{$I my_platform_specific_implementation.inc}` and you simply include them, letting the compiler find the correct version.
 
 ### Records
 
-_Record_ is just a container for other variables. It's like a much, much simplified _class_: there is no inheritance or virtual methods. It is like a _structure_ in C-like languages.
+A _record_ is just a container for other variables. It's like a much, much simplified _class_: there is no inheritance or virtual methods. It is like a _structure_ in C-like languages.
 
 If you use the `{$modeswitch advancedrecords}` directive, records *can* have methods and visibility specifiers. In general, language features that are available for classes, and _do not break the simple predictable memory layout of a record_, are then possible.
 
@@ -2140,7 +2140,7 @@ But records are still very useful when you need speed or a predictable memory la
 * The memory layout of records (size, padding between fields) is clearly defined in some situations: when you request the _C layout_, or when you use `packed record`. This is useful:
 ** to communicate with libraries written in other programming languages, when they expose an API based on records,
 ** to read and write binary files,
-** to make dirty low-level tricks (like unsafe typecasting one type to another, being aware of their memory representation).
+** to play dirty low-level tricks (like unsafe typecasting one type to another, being aware of their memory representation).
 * Records can also have `case` parts, which work like _unions_ in C-like languages. They allows to treat the same memory piece as a different type, depending on your needs. As such, this allows for greater memory efficiency in some cases. And it allows for more _dirty, low-level unsafe tricks_:)
 
 ### Variant records and related concepts
@@ -2247,7 +2247,7 @@ Both FPC and Delphi support overloading operators by defining `class operator` m
 include::code-samples/operator_overloading_class_operator.dpr[]
 ----
 
-NOTE: In case of FPC, make sure to tell the compiler you use "advanced" records' features by `{$modeswitch advancedrecords}`.
+NOTE: With FPC, make sure to tell the compiler you use the "advanced records" feature by `{$modeswitch advancedrecords}`.
 
 Take a look at the documentation to learn all possible operators that can be overloaded:
 
@@ -2279,7 +2279,7 @@ However, for records, we don't advise to use the global `operator` functions. In
 
 - This is compatible with Delphi.
 
-- This allows to use generic classes that depend on some operator existence (like `TFPGList`, that depends on equality operator being available) with such records. Otherwise the "global" definition of an operator (not inside the record) would not be found (because it's not available at the code that implements the `TFPGList`), and you could not specialize a list like `specialize TFPGList<TMyRecord>`.
+- This allows to use generic classes that depend on some operator's existence (like `TFPGList`, that depends on the equality operator being available) with such records. Otherwise the "global" definition of an operator (not inside the record) would not be found (because it's not available at the code that implements the `TFPGList`), and you could not specialize a list like `specialize TFPGList<TMyRecord>`.
 
 [source,pascal]
 ----
@@ -2538,7 +2538,7 @@ include::code-samples/static_class_method.dpr[]
 
 A _class property_ is a property that can be accessed through a class reference (it does not need a class instance).
 
-It is quite straightforward analogy of a regular property (see <<Properties>>). For a _class property_, you define a _getter_ and / or a _setter_. They may refer to a _class variable_ or a _static class method_.
+It is a quite straightforward analog of a regular property (see <<Properties>>). For a _class property_, you define a _getter_ and / or a _setter_. They may refer to a _class variable_ or a _static class method_.
 
 A _class variable_ is, you guessed it, like a regular field but you don't need a class instance to access it. In effect, it's just like a global variable, but with the namespace limited to the containing class. It can be declared within the `class var` section of the class. Alternatively
 //(in FPC) ??
@@ -2618,11 +2618,11 @@ What happens if an exception happens during a constructor? The line
 X := TMyClass.Create;
 ----
 
-does not execute to the end in this case, `X` cannot be assigned, so who will cleanup after a partially-constructed class?
+does not execute to the end in this case, `X` cannot be assigned, so who will clean up after a partially-constructed class?
 
-The solution of Object Pascal is that, in case an exception occurs within a constructor, then the destructor is called. This is a reason why _your destructor must be robust_, which means it should work in any circumstances, even on a half-created class instance. Usually this is easy if you release everything safely, like by `FreeAndNil`.
+The solution of Object Pascal is that, if an exception occurs within a constructor, then the destructor is called. This is a reason why _your destructor must be robust_, which means it should work in any circumstances, even on a half-created class instance. Usually this is easy if you release everything safely, like by `FreeAndNil`.
 
-We also have to depend in such cases that _the memory of the class is guaranteed to be zeroed right before the constructor code is executed_. So we know that at the beginning, all class references are `nil`, all integers are `0` and so on.
+_The memory of the class is guaranteed to be zeroed right before the constructor code is executed_, so we know that at the beginning, all class references are `nil`, all integers are `0` and so on.
 
 So below works without any memory leaks:
 
@@ -2682,7 +2682,7 @@ UseThroughInterface(InterfacedVariable as IMyInterface);
 +
 If executed, it would make a run-time check and raise an exception if `InterfacedVariable` does not implement `IMyInterface`.
 +
-Using `as` operator works consistently regardless if `InterfacedVariable` is declared as a class instance (like `TSomeClass`) or interface (like `ISomeInterface`). However, casting an interface to another interface this way is not allowed under `{$interfaces corba}` - we will cover that topic later.
+Using `as` operator works consistently regardless of whether `InterfacedVariable` is declared as a class instance (like `TSomeClass`) or interface (like `ISomeInterface`). However, casting an interface to another interface this way is not allowed under `{$interfaces corba}` - we will cover that topic later.
 
 2. Explicit typecasting:
 +
@@ -2704,7 +2704,7 @@ UseThroughInterface(InterfacedVariable);
 +
 In this case, the typecast must be valid at compile-time. This will compile only if the type of `InterfacedVariable` (either class or an interface) is implementing `IMyInterface`.
 +
-In essence, this typecast looks and works just like for regular classes. Wherever an instance of a class `TSomeClass` is required, you can always use there a variable that is declared with a class of `TSomeClass`, *or `TSomeClass` descendant*. The same rule applies to interfaces. No need for any explicit typecast in such situations.
+In essence, this typecast looks and works just like for regular classes. Wherever an instance of a class `TSomeClass` is required, you can always use a variable there that is declared with a class of `TSomeClass`, *or `TSomeClass` descendant*. The same rule applies to interfaces. No need for any explicit typecast in such situations.
 
 To test it all, play around with this example code:
 
@@ -2725,13 +2725,13 @@ Because these types of interfaces can be used together with the _CORBA (Common O
 +
 But they are _not really_ tied to the CORBA technology.
 +
-The name *CORBA* is perhaps unfortunate. A better name would be *bare interfaces*. The point of these interfaces is that they are a _"pure language feature"_. Use them when you want to cast various classes as the same interface, because they share a common API, and you don't want other features (life reference-counting or COM integration).
+The name *CORBA* is perhaps unfortunate. A better name would be *bare interfaces*. The point of these interfaces is that they are a _"pure language feature"_. Use them when you want to cast various classes as the same interface, because they share a common API, and you don't want other features (like reference-counting or COM integration).
 
 How do these compare with other programming languages?::
 
 The _CORBA interfaces_ in Object Pascal work pretty much like interfaces in Java (https://docs.oracle.com/javase/tutorial/java/concepts/interface.html) or C# (https://msdn.microsoft.com/en-us/library/ms173156.aspx).
 +
-Although Java and C# languages have _garbage collection_, so comparison is somewhat flawed, regardless if you compare with CORBA or COM interfaces. In our experience, the CORBA interfaces in Pascal are similar to Java and C# interfaces _in the way they are used_. That is, you use CORBA interfaces when you _want unrelated (not descending from each other) classes to share a common API_ and you don't want anything else to change.
+Although the Java and C# languages have _garbage collection_, so comparison is somewhat flawed, regardless of whether you compare with CORBA or COM interfaces. In our experience, the CORBA interfaces in Pascal are similar to Java and C# interfaces _in the way they are used_. That is, you use CORBA interfaces when you _want unrelated (not descending from each other) classes to share a common API_ and you don't want anything else to change.
 
 Is the `{$interfaces corba}` declaration needed?::
 
@@ -2766,7 +2766,7 @@ To be clear: *reference-counting*, that provides an automatic memory management 
 But these are all separate, unrelated needs. Entangling them in a single language feature is counter-useful in my experience. It does cause actual problems:
 +
 --
-* If I want the feature of _casting classes to a common interface API_, but I don't want the reference-counting mechanism (I want to manually free objects), then the COM interfaces are problematic. Even when reference-counting is disabled by a special `_AddRef` and `_ReleaseRef` implementation, you still need to be careful to never have a temporary interface reference hanging, after you have freed the class instance. More details about it in the next section.
+* If I want the feature of _casting classes to a common interface API_, but I don't want the reference-counting mechanism (I want to manually free objects), then the COM interfaces are problematic. Even when reference-counting is disabled by a special `_AddRef` and `_ReleaseRef` implementation, you still need to be careful to never have a temporary interface reference hanging, after you have freed the class instance. More about this in the next section.
 * If I want the feature of _reference counting_, but I have no need for an interface hierarchy to represent something different than the class hierarchy, then I have to duplicate my classes API in interfaces. Thus creating a single interface for each class. This is counter-productive. I would much rather have _smart pointers_ as a separate language feature, not entangled with interfaces (and luckily, it's coming:).
 --
 +
