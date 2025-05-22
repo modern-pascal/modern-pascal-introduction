@@ -1701,6 +1701,8 @@ finally
 end;
 ----
 
+Documentation of all the _Castle Game Engine_ features to load and save streams, including the `Download` function and the `TTextReader` class, is on https://castle-engine.io/url .
+
 [[generic-containers-section]]
 ### Containers (lists, dictionaries) using generics
 
