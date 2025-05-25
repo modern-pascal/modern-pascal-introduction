@@ -658,7 +658,7 @@ end.
 
 Note that this trick cannot be done as easily with global procedures, functions and variables. With procedures and functions, you could expose a constant pointer to a procedure in another unit (see <<Callbacks>>), but that looks quite dirty.
 
-The usual solution is then to create a trivial "wrapper" function that underneath simply calls the functions from the internal unit, passing the parameters and return values around.
+The usual solution is to create trivial "wrapper" functions that simply call the functions from the internal unit, passing the parameters and return values as needed.
 
 To make this work with global variables, one can use global (unit-level) properties, see <<Properties>>.
 
@@ -2140,7 +2140,7 @@ But records are still very useful when you need speed or a predictable memory la
 * The memory layout of records (size, padding between fields) is clearly defined in some situations: when you request the _C layout_, or when you use `packed record`. This is useful:
 ** to communicate with libraries written in other programming languages, when they expose an API based on records,
 ** to read and write binary files,
-** to play dirty low-level tricks (like unsafe typecasting one type to another, being aware of their memory representation).
+** to implement dirty low-level tricks (like unsafe typecasting one type to another, being aware of their memory representation).
 * Records can also have `case` parts, which work like _unions_ in C-like languages. They allows to treat the same memory piece as a different type, depending on your needs. As such, this allows for greater memory efficiency in some cases. And it allows for more _dirty, low-level unsafe tricks_:)
 
 ### Variant records and related concepts
@@ -2538,7 +2538,7 @@ include::code-samples/static_class_method.dpr[]
 
 A _class property_ is a property that can be accessed through a class reference (it does not need a class instance).
 
-It is a quite straightforward analog of a regular property (see <<Properties>>). For a _class property_, you define a _getter_ and / or a _setter_. They may refer to a _class variable_ or a _static class method_.
+It is similar to a regular property (see <<Properties>>), but all classes access (read and write) the same value. For a _class property_, you can define a _getter_ and / or a _setter_. They may refer to a _class variable_ or a _static class method_.
 
 A _class variable_ is, you guessed it, like a regular field but you don't need a class instance to access it. In effect, it's just like a global variable, but with the namespace limited to the containing class. It can be declared within the `class var` section of the class. Alternatively
 //(in FPC) ??
@@ -2622,9 +2622,9 @@ does not execute to the end in this case, `X` cannot be assigned, so who will cl
 
 The solution of Object Pascal is that, if an exception occurs within a constructor, then the destructor is called. This is a reason why _your destructor must be robust_, which means it should work in any circumstances, even on a half-created class instance. Usually this is easy if you release everything safely, like by `FreeAndNil`.
 
-_The memory of the class is guaranteed to be zeroed right before the constructor code is executed_, so we know that at the beginning, all class references are `nil`, all integers are `0` and so on.
+A helpful property we can use to write robust destructors (that can handle half-created instances) is that _the memory of the class is guaranteed to be zeroed right before the constructor code is executed_. So we know that at the beginning, all class references are `nil`, all integers are `0` and so on. The strategy for writing a robust destructor is thus: _"be prepared that any field may still be zero, and handle it without errors"_.
 
-So below works without any memory leaks:
+In effect, code below works without any memory leaks, even though constructor execution is interrupted, leaving only `Gun1` but not `Gun2` created:
 
 [source,pascal]
 ----
