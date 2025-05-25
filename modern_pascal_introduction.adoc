@@ -2599,17 +2599,91 @@ end;
 NOTE: The more general concept is _"type helper"_. Using them you can add methods even to primitive types, like integers or enums. You can also add _"record helpers_" to (you guessed it...) records. See http://lists.freepascal.org/fpc-announce/2013-February/000587.html .
 //And of course to records and old-style objects (both of them can also have regular methods, they are much like classes in this regard).
 
-### Virtual constructors, destructors
+### Should constructors and destructors be virtual?
 
-Destructor name is always `Destroy`, it is virtual (since you can call it without knowing the exact class at compile-time) and parameter-less.
+The answer is actually different for constructors and destructors, and it also depends on whether you are using `TObject` or `TComponent` as the ancestor class.
+
+#### Destructors
+
+There is only one _destructor_ in a class. It's name is always `Destroy`, it is virtual (since you can call it without knowing the exact class at compile-time) and parameter-less. Define it like this:
+
+[source,pascal]
+----
+type
+  TMyClass = class(TObject)
+  public
+    destructor Destroy; override;
+  end;
+
+destructor TMyClass.Destroy;
+begin
+  // Cleanup code here
+  inherited; // Call the ancestor destructor
+end;
+----
+
+While in theory it is possible to deviate from this approach, and define additional destructors with different names, we don't recommend it. A single destructor should be capable of cleaning up the instance (regardless of how it was created), this is obvious to developers  and this way `Free` and `FreeAndNil` can be used reliably (they will both indirectly call the `Destroy` method).
+
+#### Constructors
 
 Constructor name is by convention `Create`.
 
-You can change this name, although be careful with this -- if you define `CreateMy`, always redefine also the name `Create`, otherwise the user can still access the constructor `Create` of the ancestor, bypassing your `CreateMy` constructor.
+In the base `TObject` class there is one simple constructor, without any parameters, called `Create`. It is not virtual. When creating descendants you're free to define your own constructor(s) with any parameters you want. The new constructor will hide the constructor in the ancestor (though see below for some warnings about this "hiding"). If you don't have a good reason to make the constructor virtual in descendants, don't do it, it is not necessary.
 
-In the base `TObject` it is not virtual, and when creating descendants you're free to change the parameters. The new constructor will hide the constructor in ancestor (note: don't put here `overload`, unless you want to break it).
+For example, you can define a constructor like this:
 
-In the `TComponent` descendants, you should override its `constructor Create(AOwner: TComponent);`. For streaming functionality, to create a class without knowing its type at compile time, having virtual constructors is very useful (see <<Class references>> above).
+[source,pascal]
+----
+type
+  TMyClass = class(TObject)
+  public
+    constructor Create(AValue: Integer; const AName: String);
+  end;
+
+constructor TMyClass.Create(AValue: Integer; const AName: String);
+begin
+  inherited Create; // Call the ancestor constructor
+  // Initialization code here
+end;
+----
+
+Multiple constructors can be defined, using overloading (multiple constructors with the same name but with different parameters) and/or just inventing a new name for the constructor, like `TMyClass.CreateFromJson(const JsonFileName: String)`. It's a useful convention to start all constructor names with `Create`.
+
+When creating a class, the correct constructor is called, since you explicitly indicate the constructor name and parameters when creating an instance, like this:
+
+[source,pascal]
+----
+X1 := TMyClass.CreateFromJson('myfile.json');
+X2 := TMyClass.Create(10, 'hello');
+----
+
+WARNING: If you define a constructor with a different name, like `CreateFromJson`, you usually _also_ want to define a constructor with the standard name `Create` in the same class. Otherwise, the user can still access the ancestor constructor `Create`, thus creating an instance of your class without using your custom constructor at all. This is usually not what the developer intended.
+
+WARNING: For a similar reason, be careful when using `overload` (Delphi way of overloading, that doesn't completely hide the ancestor constructor). If you didn't redefine all ancestor constructors, then the user can still use the ancestor constructor (thus, create an instance of your new class without calling any of your constructors).
+
+The `TComponent` standard class has a virtual constructor declared like this: `constructor Create(AOwner: TComponent); virtual;`. Using virtual constructor is necessary for the streaming functionality of `TComponent`, to create a class without knowing its type at compile time (see <<Class references>> for explanation). In the `TComponent` descendants, you should override it.
+
+For example, this is how you can define a constructor in a `TComponent` descendant. Note that we cannot take additional parameters in this case (e.g. to take initial value for property `MyInt`), because we need to keep the same signature as in the ancestor class. Any customization will have to be done by developer by setting properties or calling other methods after the instance is created.
+
+[source,pascal]
+----
+type
+  TMyComponent = class(TComponent)
+  private
+    FMyInt: Integer;
+  public
+    constructor Create(AOwner: TComponent); override;
+    property MyInt: Integer read FMyInt write FMyInt;
+  end;
+
+constructor TMyComponent.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner); // Call the ancestor constructor
+  FMyInt := 0; // Default value
+end;
+----
+
+Some other classes, also in your own code, may have virtual constructors (to enable streaming them or just creating them using class references). In such cases, the constructor in descendants should generally use the same parameters and be declared with `override` (unless you really know what's going on, i.e. you understand why ancestor constructor was virtual and this reason doesn't apply to your descendant class).
 
 ### An exception in constructor
 
@@ -2620,7 +2694,7 @@ What happens if an exception happens during a constructor? The line
 X := TMyClass.Create;
 ----
 
-does not execute to the end in this case, `X` cannot be assigned, so who will clean up after a partially-constructed class?
+does not finish execution in this case, variable `X` is not assigned, so who will clean up after a partially-constructed class?
 
 The solution of Object Pascal is that, if an exception occurs within a constructor, then the destructor is called. This is a reason why _your destructor must be robust_, which means it should work in any circumstances, even on a half-created class instance. Usually this is easy if you release everything safely, like by `FreeAndNil`.
 
