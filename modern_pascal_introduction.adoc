@@ -2700,7 +2700,7 @@ The solution of Object Pascal is that, if an exception occurs within a construct
 
 A helpful property we can use to write robust destructors (that can handle half-created instances) is that _the memory of the class is guaranteed to be zeroed right before the constructor code is executed_. So we know that at the beginning, all class references are `nil`, all integers are `0` and so on. The strategy for writing a robust destructor is thus: _"be prepared that any field may still be zero, and handle it without errors"_.
 
-In effect, code below works without any memory leaks, even though constructor execution is interrupted, leaving only `Gun1` but not `Gun2` created:
+In effect, the code below works without any memory leaks, even though constructor execution is interrupted, leaving only `Gun1` but not `Gun2` created:
 
 [source,pascal]
 ----
