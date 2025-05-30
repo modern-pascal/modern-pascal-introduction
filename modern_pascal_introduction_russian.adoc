@@ -1041,11 +1041,11 @@ S := Download('https://castle-engine.io/latest.zip');
 S := Download('file:///home/michalis/my_binary_file.data');
 ----
 
-Чтобы прочитать обычный текстовый файл лучше использовать класс `TTextReader` из `CastleClassUtils`. Он предоставляет построчный API, как надстройку над `TStream`. URL можно задать через конструктор класса `TTextReader`, либо можно передать ему готовый `TStream` вручную.
+Чтобы прочитать обычный текстовый файл лучше использовать класс `TCastleTextReader` из `CastleClassUtils`. Он предоставляет построчный API, как надстройку над `TStream`. URL можно задать через конструктор класса `TCastleTextReader`, либо можно передать ему готовый `TStream` вручную.
 
 [source,pascal]
 ----
-Text := TTextReader.Create('castle-data:/my_data.txt');
+Text := TCastleTextReader.Create('castle-data:/my_data.txt');
 while not Text.Eof do
   WriteLnLog('NextLine', Text.ReadLine);
 ----

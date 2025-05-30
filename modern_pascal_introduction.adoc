@@ -1688,11 +1688,11 @@ S := Download('file:///home/michalis/my_binary_file.data');
 S := Download('castle-data:/gui/my_image.png');
 ----
 
-To read text files, we advise using the `TTextReader` class. It provides a line-oriented API, and wraps a `TStream` inside. The `TTextReader` constructor can take a ready URL, or you can pass there your custom `TStream` source.
+To read text files, we advise using the `TCastleTextReader` class. It provides a line-oriented API, and wraps a `TStream` inside. The `TCastleTextReader` constructor can take a ready URL, or you can pass there your custom `TStream` source.
 
 [source,pascal]
 ----
-Text := TTextReader.Create('castle-data:/my_data.txt');
+Text := TCastleTextReader.Create('castle-data:/my_data.txt');
 try
   while not Text.Eof do
     WriteLnLog('NextLine', Text.ReadLn);
@@ -1701,7 +1701,7 @@ finally
 end;
 ----
 
-Documentation of all the _Castle Game Engine_ features to load and save streams, including the `Download` function and the `TTextReader` class, is on https://castle-engine.io/url .
+Documentation of all the _Castle Game Engine_ features to load and save streams, including the `Download` function and the `TCastleTextReader` class, is on https://castle-engine.io/url .
 
 [[generic-containers-section]]
 ### Containers (lists, dictionaries) using generics

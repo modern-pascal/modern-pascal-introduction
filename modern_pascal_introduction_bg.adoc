@@ -1581,11 +1581,11 @@ S := Download('file:///home/michalis/my_binary_file.data');
 S := Download('castle-data:/gui/my_image.png');
 ----
 
-За да четете текстови файлове, препоръчваме да използвате класа `TTextReader`. Той предоставя поредово API и съдържа в себе си `TStream`. Конструкторът `TTextReader` може да вземе готов URL адрес или вие можете да подадете там вашия персонализиран източник `TStream`.
+За да четете текстови файлове, препоръчваме да използвате класа `TCastleTextReader`. Той предоставя поредово API и съдържа в себе си `TStream`. Конструкторът `TCastleTextReader` може да вземе готов URL адрес или вие можете да подадете там вашия персонализиран източник `TStream`.
 
 [source,pascal]
 ----
-Text := TTextReader.Create('castle-data:/my_data.txt');
+Text := TCastleTextReader.Create('castle-data:/my_data.txt');
 try
   while not Text.Eof do
     WriteLnLog('NextLine', Text.ReadLn);
