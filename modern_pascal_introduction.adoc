@@ -688,16 +688,38 @@ begin
 end;
 ----
 
-### Inheritance, is, as
+### Inheritance, virtual methods, override, reintroduce
 
 We have inheritance and virtual methods.
+
+In the example below, class `TMyClassDescendant` *inherits* from class `TMyClass`. The `TMyClassDescendant` is a *descendant* of `TMyClass`, and `TMyClass` is an *ancestor* of `TMyClassDescendant`.
 
 [source,pascal]
 ----
 include::code-samples/inheritance.dpr[]
 ----
 
-By default methods are not virtual, declare them with `virtual` to make them so. Overrides must be marked with `override`, otherwise you will get a warning. To hide a method without overriding (usually you don't want to do this, unless you know what you're doing) use `reintroduce`.
+When a method is *virtual* it means that the compiler searches for the method implementation at runtime, based on the actual class of the instance. What does this mean in practice?
+
+- Run the above example unmodified. Note that the method `MyVirtualMethod` is virtual. The call `C.MyVirtualMethod` selects the appropriate implementation based on the actual class of the instance `C`. When `C` is of class `TMyClassDescendant`, the `TMyClassDescendant.MyVirtualMethod` implementation is called. Thus the output should be:
++
+```
+TMyClass shows MyInt + 10: 10
+TMyClassDescendant shows MyInt + 20: 20
+```
+
+- Now modify the above example removing the `virtual;` and `override;` pieces. Both calls `C.MyVirtualMethod` will now call the implementation from `TMyClass`, because `C` is declared as `TMyClass`, so at _compile-time_ all the compiler knows is that `C` is a `TMyClass`. The output will be:
++
+```
+TMyClass shows MyInt + 10: 10
+TMyClass shows MyInt + 10: 20
+```
++
+In short, this is usually not what you want. You want virtual methods.
+
+By default methods are not virtual, declare them with `virtual` to make them so. Overrides must be marked with `override`, otherwise you will get a warning. To hide a method (declared in ancestor as `virtual`) without overriding it (usually you don't want to do this, unless you know what you're doing) use `reintroduce`.
+
+### Testing class (is), typecasting (as, TMyClass(X))
 
 To test the class of an instance at runtime, use the `is` operator. To typecast the instance to a specific class, use the `as` operator.
 
