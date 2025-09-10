@@ -719,6 +719,71 @@ In short, this is usually not what you want. You want virtual methods.
 
 By default methods are not virtual, declare them with `virtual` to make them so. Overrides must be marked with `override`, otherwise you will get a warning. To hide a method (declared in ancestor as `virtual`) without overriding it (usually you don't want to do this, unless you know what you're doing) use `reintroduce`.
 
+### Classes and class instances, constructors, destructors
+
+Example in the section above shows a *class* called `TMyClass` (and another class called `TMyClassDescendant`). The *class* is a _type_, you can also think of it as a _template_. The class itself doesn't hold any values -- there is no memory reserved for the field `MyInt: Integer` declared in the example above.
+
+NOTE: It is actually possible for a class to _"hold values"_ by using _class variables_, but for now let's forget about this possibility. Focus on simple classes that have only regular fields.
+
+To reserve memory for the fields, we need to create a *class instance*.
+
+Creating the class instance is done by invoking a *constructor*.
+
+- Constructor is a special kind of a method, using the keyword `constructor`.
+
+- Before invoking a constructor, a memory for the class instance is allocated, and then the constructor code is called.
+
+- You don't need to define a constructor in all your classes. All classes implicitly descend from the `TObject` which has a parameter-less constructor called `Create`. So you always have a constructor, even if you didn't define one.
+
+- But you *can* define a constructor in your class. It's the best way to initialize a class instance. If you want to later depend that e.g. "initial value of field X is Y", then make it so (`X := Y;`) in the constructor.
+
+- Your own constructors are usually also called just `Create`. More details about naming constructors and destructors are in <<The virtual destructor called Destroy>>.
+
+You invoke the constructor, allocating a class instance, like this:
+
+[source,pascal]
+----
+X := TMyClass.Create;
+----
+
+You define your own constructor like this:
+
+[source,pascal]
+----
+type
+  TMyClass = class
+  public
+    X: Integer;
+    constructor Create;
+  end;
+
+constructor TMyClass.Create;
+begin
+  inherited Create; // Call the ancestor constructor
+  // Initialization code here
+  X := 123;
+end;
+----
+
+Conversely, when a class is _destroyed_, a `destructor` is called.
+
+- It is again a special kind of a method, using the keyword `destructor`.
+
+- After invoking the destructor, a memory for the class instance is released. Accessing the fields of the destroyed instance is no longer allowed.
+
+- Again, you don't need to define a destructor in all your classes. All classes implicitly descend from the `TObject` which has a parameter-less destructor called `Destroy`.
+
+- But you *can* define a destructor in your class. This is your last chance to do any "cleanup". E.g. maybe your class instance created some other class instances, internal, and now they need to be freed.
+
+- If you define one, there should be only one destructor, called `Destroy`, always with `override;`. More details why it should be so are in <<The virtual destructor called Destroy>>.
+
+Here's an example:
+
+[source,pascal]
+----
+include::code-samples/constructor_destructor.dpr[]
+----
+
 ### Testing class (is), typecasting (as, TMyClass(X))
 
 To test the class of an instance at runtime, use the `is` operator. To typecast the instance to a specific class, use the `as` operator.
