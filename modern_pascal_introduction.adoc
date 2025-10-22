@@ -7,21 +7,30 @@ include::locale/attributes.adoc[]
 :source-highlighter: coderay
 :docinfo1:
 
-## Why
+## Why this book
 
-There are many books and resources about Pascal out there, but too many of them talk about the old Pascal, without classes, units or generics.
-// Some of them talk about Pascal before it even had classes. Some of them show classes, as done in Delphi, but fail to mention more modern features, like generics.
+I wanted to describe the *modern Object Pascal*: programming language with classes, units, generics, interfaces and other modern features you expect. I wanted to show how all the language features, basic and advanced, connect together into a consistent whole.
 
-So I wrote this quick introduction to what I call *modern Object Pascal*. Most of the programmers using it don't really call it _"modern Object Pascal"_, we just call it _"our Pascal"_. But when introducing the language, I feel it's important to emphasize that it's a modern, object-oriented language. It evolved a *lot* since the old (Turbo) Pascal that many people learned in schools long time ago. Feature-wise, it's quite similar to C++ or Java or C#.
+I also wanted this book to be practical and concise to fellow developers. As such, I assume you already have some programming experience, and we can talk about things like _"how to declare a variable"_ and avoid a lengthy explanation _"what even is a variable and what is its purpose"_. When covering the basics, I will give a brief description, and then move on, like this: a _variable_ is a container for some value; the container has a name; the value it holds may change over time.
+
+I emphasize the word _modern_ in _modern Object Pascal_.
+That's because _Pascal_ has evolved a *lot*, and it's quite different from e.g. _Turbo Pascal_ that many people learned in schools long time ago. Feature-wise, _modern Pascal_ is quite similar to C++ or Java or C#.
 
 * It has all the modern features you expect -- classes, units, interfaces, generics...
 * It's compiled to a fast, native code,
 * It's very type safe,
 * High-level but can also be low-level if you need it to be.
 
-It also has excellent, portable and open-source compiler called the _Free Pascal Compiler_, http://freepascal.org/ . And an accompanying IDE (editor, debugger, a library of visual components, form designer) called _Lazarus_ http://lazarus.freepascal.org/ . There's also a proprietary and commercial compiler and IDE _Delphi_ https://www.embarcadero.com/products/Delphi . There's a lot of libraries (for both FPC and Delphi) available, see https://github.com/Fr0sT-Brutal/awesome-pascal . We also support existing editors like _VS Code_, see https://castle-engine.io/vscode . Myself, I'm the creator of _Castle Game Engine_, https://castle-engine.io/ , which is an open-source 3D and 2D game engine using modern Pascal to create games on many platforms (Windows, Linux, macOS, Android, iOS, Nintendo Switch; also WebGL is coming).
+For more reasoning about https://castle-engine.io/why_pascal[why use Pascal, see here].
 
-This introduction is mostly directed at programmers who already have experience in other languages. We will not cover here the meanings of some universal concepts, like _"what is a class"_, we'll only show how to do them in Pascal.
+We also have an active ecosystem of tools and libraries. To name just a few:
+
+* Pascal has an excellent, portable and open-source compiler called the _Free Pascal Compiler_, http://freepascal.org/ .
+* And an accompanying IDE (editor, debugger, a library of visual components, form designer) called _Lazarus_ http://lazarus.freepascal.org/ .
+* There's also a proprietary and commercial compiler and IDE _Delphi_ https://www.embarcadero.com/products/Delphi .
+* There's a lot of libraries (for both FPC and Delphi) available, see https://github.com/Fr0sT-Brutal/awesome-pascal .
+* We also support existing editors like _VS Code_, see https://castle-engine.io/vscode .
+* Myself, I'm the creator of _Castle Game Engine_, https://castle-engine.io/ , which is an open-source 3D and 2D game engine using modern Pascal to create games on many platforms (Windows, Linux, FreeBSD, macOS, Android, iOS, Nintendo Switch, WebGL).
 
 ## Basics
 
@@ -46,7 +55,9 @@ NOTE: You can also run it from _Lazarus_ or _Delphi_ IDE using the _"Run"_ menu 
 
 The rest of this article talks about the Object Pascal language, so don't expect to see anything more fancy than the command-line stuff. If you want to see something cool, just create a new GUI project in _Lazarus_ (_"Project -> New Project -> Application"_) or _Delphi_ (_"File ->  New -> Multi-Device Application"_).
 //Play around, drop some buttons on the form, handle their events (like `OnClick`).
-Voila -- a working GUI application, cross-platform, with native look everywhere, using a comfortable visual component library. The Pascal compilers come with lots of standard units for networking, GUI, database, file formats (XML, json, images...), threading and everything else you may need. I already mentioned my cool _Castle Game Engine_ earlier:)
+Voila -- a working GUI application, cross-platform, with native look everywhere, using a comfortable visual component library.
+
+The Pascal compilers come with lots of standard units for networking, GUI, database, file formats (XML, json, images...), threading and everything else you may need. I already mentioned my cool _Castle Game Engine_ earlier:)
 // The libraries created in other languages (dll, so, dylib) can be easily used from FPC too (and for most of them, you'll find ready "header" units, and even units that wrap them in more modern object-oriented API).
 
 ### Compilers and FPC "syntax modes"
@@ -57,13 +68,15 @@ This book, all the text and Pascal examples, has been written to support two mod
 
 2. _Delphi_, a proprietary Pascal compiler from Embarcadero.
 
-In this book, we chose to support both compilers, fully. Just like in _Castle Game Engine_, we support them both, and it's your choice which one do you prefer. Our _continuous integration_ (see https://castle-engine.io/github_actions) makes sure all samples really compile with both compilers.
+In this book, we support fully both compilers.
+//TMI:Just like in _Castle Game Engine_, we support them both, and it's your choice which one do you prefer.
+//TMI: Our _continuous integration_ (see https://castle-engine.io/github_actions) makes sure all samples really compile with both compilers.
 
 To complicate matters a bit, FPC compiler has multiple "syntax modes". In this book, we decided to show the _ObjFpc_ syntax mode, which is recommended by the FPC developers and is the default for new Pascal projects created using _Lazarus_ or _Castle Game Engine_. It's a bit different from the _Delphi_ syntax mode, which is most compatible with Pascal language as implemented by _Delphi_. We https://github.com/modern-pascal/modern-pascal-introduction/wiki/Some-differences-betwen-FPC-ObjFpc-mode-and-Delphi-(and-FPC-Delphi-mode)[wrote a detailed comparison here].
 
 But you don't want to read about these differences now, if you're just starting to learn Pascal!
 
-The differences are minor, both between compilers and between FPC _ObjFpc_ mode and _Delphi_ mode. Just be aware you may see some `{$ifdef FPC} ... {$endif}` clauses in the examples, that make the code valid for both _FPC ObjFpc mode_ and _Delphi_. Using `{$ifdef FPC_OBJFPC} ... {$endif}` in some of these cases could be more precise, but look even more complicated. If your project targets only one of these compilers, you can simplify your code, just pick the variant for your compiler and remove the `{$ifdef ...}`, `{$endif}` stuff.
+The differences are minor, both between compilers and between FPC _ObjFpc_ mode and _Delphi_ mode. Just be aware you may see some `{$ifdef FPC} ... {$endif}` clauses in the examples, that make the code valid for both _FPC ObjFpc mode_ and _Delphi_. Using `{$ifdef FPC_OBJFPC} ... {$endif}` in some of these cases would be more precise, but look even more complicated. If your project targets only one of these compilers, you can simplify your code, just pick the variant for your compiler and remove the `{$ifdef ...}`, `{$endif}` stuff.
 
 ### Functions, procedures, primitive types
 
