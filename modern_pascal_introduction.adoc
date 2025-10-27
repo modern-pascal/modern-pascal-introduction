@@ -2054,23 +2054,8 @@ Note that you _cannot_ pass global procedures / functions as methods. They are i
 +
 [source,pascal]
 ----
-type
-  TMyMethod = function (const A, B: Integer): Integer of object;
-
-  TMyClass = class
-    class function Add(const A, B: Integer): Integer
-    class function Multiply(const A, B: Integer): Integer
-  end;
-
-var
-  M: TMyMethod;
-begin
-  M := @TMyClass(nil).Add;
-  M := @TMyClass(nil).Multiply;
-end;
+include::code-samples/callbacks_of_object_class_methods.dpr[]
 ----
-+
-Unfortunately, you need to write ugly `@TMyClass(nil).Add` instead of just `@TMyClass.Add`.
 
 * A (possibly) local routine: declare with `is nested` at the end, and make sure to use `{$modeswitch nestedprocvars}` directive for the code. These go hand-in-hand with <<Local (nested) routines>>.
 
