@@ -1879,11 +1879,9 @@ TFPGList:: A generic list of types.
 TFPGObjectList:: A generic list of object instances. It can "own" children.
 TFPGMap:: A generic dictionary.
 
-//Use `TFPGList` for lists of primitives (or records or old-style objects), `TFPGObjectList` for a list of class instances. *In the Castle Game Engine:* You can also use `CastleGenericLists` with `TGenericStructList` for a list of records or old-style objects, this workarounds the problem of impossibility to override their operators in older FPC versions.
+//Use `TFPGList` for lists of primitives (or records or old-style objects), `TFPGObjectList` for a list of class instances.
 
 In `FGL` unit, the `TFPGList` can be only used for types for which the equality operator (=) is defined. For `TFPGMap` the _"greater than"_ (>) and _"less than"_ (<) operators must be defined for the key type. If you want to use these lists with types that don't have built-in comparison operators (e.g. with records), you have to overload their operators as shown in the <<Operator overloading>>.
-
-*In the Castle Game Engine* we include a unit `CastleGenericLists` that adds `TGenericStructList` and `TGenericStructMap` classes. They are similar to `TFPGList` and `TFPGMap`, but they do not require a definition of the comparison operators for the appropriate type (instead, they compare memory contents, which is often appropriate for records or method pointers). But the `CastleGenericLists` unit is deprecated since the engine version 6.3, as we advise using `Generics.Collections` instead.
 
 If you want to know more about the generics, see <<Generics>>.
 

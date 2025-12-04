@@ -1670,11 +1670,9 @@ TFPGList:: Генеричен списък от елементи от указа
 TFPGObjectList:: Генеричен списък от екземпляри от указан клас. Може да "притежава" екземплярите.
 TFPGMap:: Генеричен речник{empty}footnote:dictionary[].
 
-//Use `TFPGList` for lists of primitives (or records or old-style objects), `TFPGObjectList` for a list of class instances. *In the Castle Game Engine:* You can also use `CastleGenericLists` with `TGenericStructList` for a list of records or old-style objects, this workarounds the problem of impossibility to override their operators in older FPC versions.
+//Use `TFPGList` for lists of primitives (or records or old-style objects), `TFPGObjectList` for a list of class instances.
 
 В модул `FGL`, `TFPGList` може да се използва само с типове, които имат дефиниран оператор за равенство (=). При `TFPGMap` за типа на ключа трябват дефинирани оператори _"по-голямо"_ (>) и _"по-малко"_ (<). Ако искате да използвате тези контейнери с типове, които нямат дефинирани оператори за сравнение (например записи), ще трябва да им дефинирате съответните оператори както е показано в <<Замяна на оператори>>.
-
-В *Castle Game Engine* сме включили модул `CastleGenericLists`, който добавя класовете `TGenericStructList` и `TGenericStructMap`. Те са подобни на `TFPGList` и `TFPGMap`, но не изискват дефиниране на оператори за сравнение за съответните типове (вместо това, те сравняват съдържанието на паметта, което е често подходящо за записи или указатели). Но от версия 6.3 модула `CastleGenericLists` е маркиран като отживял (_deprecated_) и препоръчваме използването на `Generics.Collections` вместо него.
 
 Ако искате да научите повече за генериците, вижте <<Generics>>.
 
