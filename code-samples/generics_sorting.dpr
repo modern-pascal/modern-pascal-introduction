@@ -4,9 +4,10 @@
 { If GENERICS_CONSTREF is defined, then various routines used with Generics.Collections
   (like callbacks we pass to TComparer, or OnNotify callback or Notify virtual method)
   should have "constref" parameter, not "const".
-  This was the case of FPC<= 3.2.0, FPC changed it in
-  https://gitlab.com/freepascal.org/fpc/source/-/commit/693491048bf2c6f9122a0d8b044ad0e55382354d .
-  It is also applied to FPC fixes branch 3.2.3 and later 3.2.4(rc1). }
+  This was the case in FPC <= 3.2.0.
+  FPC changed constref->const in
+  https://gitlab.com/freepascal.org/fpc/source/-/commit/693491048bf2c6f9122a0d8b044ad0e55382354d
+  and the change is present in FPC fixes branch 3.2.3 and later 3.2.4(rc1). }
 {$ifdef VER3_0} {$define GENERICS_CONSTREF} {$endif}
 {$ifdef VER3_2_0} {$define GENERICS_CONSTREF} {$endif}
 {$ifdef VER3_2_2} {$define GENERICS_CONSTREF} {$endif}
