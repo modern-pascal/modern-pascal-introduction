@@ -23,7 +23,7 @@ jobs:
     # require it, FPC 3.2.0 is not enough.
     container: kambi/castle-engine-cloud-builds-tools:cge-none-fpc331
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - run: cd code-samples/ && make
 
   delphi_test:
@@ -35,7 +35,7 @@ jobs:
         ]
     runs-on: ${{ matrix.host-label }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Delphi Build (Win32)
         run: cd code-samples/ && make all-delphi-win32
       - name: Delphi Build (Win64)
