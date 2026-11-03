@@ -1,5 +1,4 @@
 {
-    "asciidoc.antora.enableAntoraSupport": false,
     "cSpell.enabled": true,
     "cSpell.words": [
         "adoc",
@@ -8,6 +7,7 @@
         "anotherunit",
         "apptype",
         "ASCIIDOCTOR",
+        "bigdecimal",
         "cdecl",
         "coderay",
         "Contnrs",
@@ -46,6 +46,7 @@
         "TFPG",
         "TMyInts",
         "toclevels",
+        "ttfunk",
         "typecasted",
         "Unported",
         "unversioned",
