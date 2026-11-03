@@ -23,11 +23,21 @@ $(NAME).xml: $(NAME).adoc
 	asciidoctor $(ASCIIDOCTOR_LANGUAGE) -b docbook5 $< -o $@
 #	yelp $@
 
-$(NAME).pdf: $(NAME).xml
-	fopub $(NAME).xml
-
-# $(NAME).pdf: $(NAME).adoc
-# 	asciidoctor-pdf $(NAME).adoc
+# Notes about options:
+# - "asciidoctor -r asciidoctor-pdf -b pdf" is equivalent to "asciidoctor-pdf",
+#   but works also with Debian ruby-asciidoctor-pdf that doesn't provide
+#   the asciidoctor-pdf command.
+# - "-r ttfunk" must be before "-r asciidoctor-pdf". Otherwise, with ruby-ttfunk
+#   from Debian and a newer bigdecimal from "gem update", loading fails with
+#   "Unable to activate ttfunk-1.8.0, because bigdecimal-4.1.3 conflicts...".
+# - source-highlighter=rouge overrides the coderay set in adoc (which remains
+#   used for HTML output). Rouge shows directives like {$ifdef ...} grayed out,
+#   so they are not confused with real code; coderay shows them as plain text.
+# - title-page, because otherwise the author is not shown in the PDF.
+# - pdf-theme, because the default fonts lack some characters used in translations
+#   (e.g. en dash in monospace font, used by Ukrainian code samples).
+$(NAME).pdf: $(NAME).adoc
+	asciidoctor -r ttfunk -r asciidoctor-pdf -b pdf $(ASCIIDOCTOR_LANGUAGE) -a source-highlighter=rouge -a title-page -a pdf-theme=default-with-font-fallbacks $< -o $@
 
 .PHONY: clean
 clean:
