@@ -2990,6 +2990,14 @@ To avoid this mess, it's usually better to use CORBA interfaces, if you don't wa
 include::code-samples/interfaces_com_test.dpr[]
 ----
 
+## Support this book and Castle Game Engine
+
+What next?
+
+- If you want to use modern Pascal to make games or 3D visualizations, try https://castle-engine.io/[Castle Game Engine]: free and open-source, with a visual editor, for Delphi and FPC/Lazarus. https://castle-engine.io/download[Download it here] and follow the https://castle-engine.io/build_first[build your first application] tutorial.
+
+- This book is free, and it will stay free. If it helped you, please https://patreon.com/castleengine[support us on Patreon]. Your support funds the work on this book and on _Castle Game Engine_. Thank you!
+
 ## About this document
 
 Copyright Michalis Kamburelis.
