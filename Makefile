@@ -24,20 +24,47 @@ $(NAME).xml: $(NAME).adoc
 #	yelp $@
 
 # Notes about options:
-# - "asciidoctor -r asciidoctor-pdf -b pdf" is equivalent to "asciidoctor-pdf",
+#
+# - Fallback on "asciidoctor -r asciidoctor-pdf -b pdf": it should be equivalent
+#   to "asciidoctor-pdf",
 #   but works also with Debian ruby-asciidoctor-pdf that doesn't provide
 #   the asciidoctor-pdf command.
+#
+#   The gem installation of asciidoctor-pdf provides the command.
+#   Check it by "which asciidoctor-pdf", it shows binary in /usr/local/bin/asciidoctor-pdf,
+#   thus not from the Debian package (since in /usr/local/).
+#   We *should* use asciidoctor-pdf command, if possible, it will mean we use
+#   consistent packages (from gems).
+#   Trying to use "asciidoctor ... -r asciidoctor-pdf" risks we end up using
+#   inconsistent packages (Debian vs gems) and get errors like
+#   "asciidoctor: FAILED: 'asciidoctor-pdf' could not be loaded".
+#
 # - "-r ttfunk" must be before "-r asciidoctor-pdf". Otherwise, with ruby-ttfunk
 #   from Debian and a newer bigdecimal from "gem update", loading fails with
 #   "Unable to activate ttfunk-1.8.0, because bigdecimal-4.1.3 conflicts...".
+#
+#   This is likely an artifact of Michalis' systems mixing Ruby gems
+#   and Debian packages.
+#
 # - source-highlighter=rouge overrides the coderay set in adoc (which remains
 #   used for HTML output). Rouge shows directives like {$ifdef ...} grayed out,
 #   so they are not confused with real code; coderay shows them as plain text.
+#
 # - title-page, because otherwise the author is not shown in the PDF.
+#
 # - pdf-theme, because the default fonts lack some characters used in translations
 #   (e.g. en dash in monospace font, used by Ukrainian code samples).
+ASCIIDOCTOR_PDF_ARGS=$(ASCIIDOCTOR_LANGUAGE) \
+	-a source-highlighter=rouge \
+	-a title-page \
+	-a pdf-theme=default-with-font-fallbacks
+
 $(NAME).pdf: $(NAME).adoc
-	asciidoctor -r ttfunk -r asciidoctor-pdf -b pdf $(ASCIIDOCTOR_LANGUAGE) -a source-highlighter=rouge -a title-page -a pdf-theme=default-with-font-fallbacks $< -o $@
+	if command -v asciidoctor-pdf >/dev/null; then \
+		asciidoctor-pdf $(ASCIIDOCTOR_PDF_ARGS) $< -o $@; \
+	else \
+		asciidoctor -r ttfunk -r asciidoctor-pdf -b pdf $(ASCIIDOCTOR_PDF_ARGS) $< -o $@; \
+	fi
 
 .PHONY: clean
 clean:
@@ -81,7 +108,7 @@ copy-all:
 update-cge-www: copy-all
 # Sanity check.
 	if [ ! -f $(CGE_ADOC_PATH) ]; then \
-	  echo "Missing $(CGE_ADOC_PATH), make sure CASTLE_ENGINE_PATH env variable is OK and cge-www is cloned alongside"; \
+		echo "Missing $(CGE_ADOC_PATH), make sure CASTLE_ENGINE_PATH env variable is OK and cge-www is cloned alongside"; \
 		exit 1; \
 	fi
 
@@ -100,7 +127,7 @@ update-cge-www: copy-all
 # Copy the code samples.
 # Avoid deleting/overwriting .gitignore there, which is maintained by hand in cge-www.
 	find $(CGE_SAMPLES_PATH) \
-	  '(' -type f -name .gitignore -prune ')' -or \
+		'(' -type f -name .gitignore -prune ')' -or \
 		'(' -type f -execdir rm -f '{}' ';' ')'
 	make -C code-samples/ clean
 	cp -Rf code-samples/* $(CGE_SAMPLES_PATH)
